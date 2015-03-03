@@ -1,3 +1,4 @@
 zonethreatreport
 *.log
+*.list
 *.zone*
