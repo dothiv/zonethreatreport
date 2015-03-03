@@ -26,5 +26,5 @@ func main() {
 	defer zonefile.Close()
 
 	// tld := os.Args[2]
-	ztr.Dbl(zonefile, os.Stderr, os.Stdout)
+	ztr.Dbl(zonefile, "dbl.spamhaus.org", os.Stderr, os.Stdout)
 }

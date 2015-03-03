@@ -9,32 +9,30 @@ import (
 	"strings"
 )
 
-const DBL = ".dbl.spamhaus.org"
-
 /**
- * Check if domain is listen in Domain Block List
+ * Check if domain is listed in Domain Block List
  */
-func Dbl(zonefile io.Reader, reportlog io.Writer, infolog io.Writer) {
+func Dbl(zonefile io.Reader, dbl string, reportlog io.Writer, infolog io.Writer) {
 	io.WriteString(reportlog, "++++++++++++++++++++++++++++++++++++\n")
 	io.WriteString(reportlog, "+++ Domain Block List checks ... +++\n")
 	io.WriteString(reportlog, "++++++++++++++++++++++++++++++++++++\n")
 	io.WriteString(reportlog, "\n")
-	io.WriteString(reportlog, fmt.Sprintf("Checking with %s\n", DBL))
+	io.WriteString(reportlog, fmt.Sprintf("Checking with %s\n", dbl))
 
 	scanner := bufio.NewScanner(zonefile)
 	numchecks := 0
 	alerts := 0
 	for scanner.Scan() {
 		domain := strings.Split(scanner.Text(), "\t")[0]
-		cmd := exec.Command("dig", domain, "+short")
+		io.WriteString(infolog, fmt.Sprintf("DBL: %s\n", domain))
+		cmd := exec.Command("dig", domain+dbl, "+short")
 		dig, err := cmd.Output()
 		if err != nil {
 			log.Fatal(err)
 		}
 		numchecks += 1
-		io.WriteString(infolog, fmt.Sprintf("DBL: %s\n", domain))
 		if strings.Contains(string(dig), "127.0.1.") {
-			io.WriteString(reportlog, fmt.Sprintf("%s is listed in %s: %s\n", domain, DBL, dig))
+			io.WriteString(reportlog, fmt.Sprintf("%s is listed in %s: %s\n", domain, dbl, dig))
 			alerts += 1
 		}
 	}
