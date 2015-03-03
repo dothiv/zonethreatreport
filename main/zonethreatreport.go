@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	ztr "github.com/dothiv/zonethreatreport"
+	"io"
 	"log"
 	"os"
+	"time"
 )
 
 func help() {
@@ -19,12 +21,28 @@ func main() {
 		help()
 		return
 	}
-	zonefile, err := os.Open(os.Args[1])
+	zonefilepath := os.Args[1]
+	zonefile, err := os.Open(zonefilepath)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer zonefile.Close()
 
-	// tld := os.Args[2]
-	ztr.Dbl(zonefile, "dbl.spamhaus.org", os.Stderr, os.Stdout)
+	tld := os.Args[2]
+	start := time.Now()
+	io.WriteString(os.Stderr, "##\n")
+	io.WriteString(os.Stderr, fmt.Sprintf("# %s version %s\n", os.Args[0], ztr.VERSION))
+	io.WriteString(os.Stderr, fmt.Sprintf("# Start time: %s\n", start.Format(time.RFC3339)))
+	io.WriteString(os.Stderr, fmt.Sprintf("# TLD: %s\n", tld))
+	io.WriteString(os.Stderr, fmt.Sprintf("# Zone file: %s\n", zonefilepath))
+	io.WriteString(os.Stderr, "##\n\n")
+
+	dbl := "dbl.spamhaus.org"
+	io.WriteString(os.Stderr, fmt.Sprintf("# Check if domains are listed in Domain Block List at %s\n", dbl))
+	// ztr.Dbl(zonefile, dbl, os.Stderr, os.Stdout)
+	end := time.Now()
+	io.WriteString(os.Stderr, "\n##\n")
+	io.WriteString(os.Stderr, fmt.Sprintf("# End time: %s\n", end.Format(time.RFC3339)))
+	io.WriteString(os.Stderr, fmt.Sprintf("# Duration: %s\n", end.Sub(start)))
+	io.WriteString(os.Stderr, "##\n")
 }
