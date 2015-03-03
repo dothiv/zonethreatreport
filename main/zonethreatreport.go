@@ -47,7 +47,7 @@ func main() {
 		log.Fatal(err)
 	}
 	defer zonefile.Close()
-	totalAlerts += ztr.Dbl(zonefile, dbl, os.Stderr, os.Stdout)
+	totalAlerts += ztr.Dbl(zonefile, dbl, new(ztr.RealCommandRunner), os.Stderr, os.Stdout)
 	io.WriteString(os.Stderr, "\n")
 
 	// Extra files

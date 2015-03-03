@@ -9,17 +9,27 @@ import (
 	"strings"
 )
 
+type CommandRunner interface {
+	Run(string, ...string) ([]byte, error)
+}
+type RealCommandRunner struct{}
+
+// the real runner for the actual program, actually execs the command
+func (r RealCommandRunner) Run(command string, args ...string) ([]byte, error) {
+	out, err := exec.Command(command, args...).CombinedOutput()
+	return out, err
+}
+
 /**
  * Check if domain is listed in Domain Block List
  */
-func Dbl(zonefile io.Reader, dbl string, reportlog io.Writer, infolog io.Writer) (alerts int) {
+func Dbl(zonefile io.Reader, dbl string, runner CommandRunner, reportlog io.Writer, infolog io.Writer) (alerts int) {
 	scanner := bufio.NewScanner(zonefile)
 	numchecks := 0
 	for scanner.Scan() {
 		domain := strings.Split(scanner.Text(), "\t")[0]
 		io.WriteString(infolog, fmt.Sprintf("DBL: %s\n", domain))
-		cmd := exec.Command("dig", domain+dbl, "+short")
-		dig, err := cmd.Output()
+		dig, err := runner.Run("dig", domain+dbl, "+short")
 		if err != nil {
 			log.Fatal(err)
 		}

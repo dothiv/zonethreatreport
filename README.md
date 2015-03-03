@@ -1,12 +1,14 @@
 # Zone Threat Report
 
+[![Travis](https://travis-ci.org/dothiv/zonethreatreport.svg?branch=master)](https://travis-ci.org/dothiv/zonethreatreport/)
+
 This script checks domains in a zone for possible threats.
 
-It uses the tlds zone file to query the [Domain Block List](https://www.spamhaus.org/dbl/)]. 
+It uses the tlds zone file to query the [Domain Block List](https://www.spamhaus.org/dbl/). 
 The file is expected to be named `$tld.zone`
 
 All extra arguments are interpreted as list of domain names, those are scanned
-for domains of the tld.
+for domains of the given tld.
 
 The program prints the progress to stdout and the report to stderr.
 
